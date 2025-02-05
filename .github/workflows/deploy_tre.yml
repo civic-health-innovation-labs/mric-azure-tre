@@ -6,7 +6,7 @@ name: Deploy Azure TRE
 on:  # yamllint disable-line rule:truthy
   schedule:
     # midnight every day https://crontab.guru/#0_0_*_*_*
-    - cron: "0 0 * * *"
+    - cron: "0 0 1 1 *"
   push:
     branches: [main]
   workflow_dispatch:
@@ -35,7 +35,7 @@ jobs:
       e2eTestsCustomSelector: >-
         ${{ (github.event_name == 'push' && 'extended or extended_aad')
         || 'extended or extended_aad or shared_services or airlock' }}
-      environmentName: ${{ github.event.inputs.environment || 'Dev' }}
+      environmentName: ${{ github.event.inputs.environment || 'Prod' }}
       E2E_TESTS_NUMBER_PROCESSES: 1
       DEVCONTAINER_TAG: 'latest'
     secrets:
