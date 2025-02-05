@@ -36,7 +36,7 @@ resource "azurerm_windows_virtual_machine" "jumpbox" {
   admin_username             = "adminuser"
   admin_password             = random_password.password.result
   tags                       = local.tre_shared_service_tags
-  encryption_at_host_enabled = true
+  encryption_at_host_enabled = false
   secure_boot_enabled        = true
   vtpm_enabled               = true
 
