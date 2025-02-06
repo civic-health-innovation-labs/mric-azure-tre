@@ -34,7 +34,6 @@ resource "azurerm_servicebus_namespace" "sb" {
     content {
       key_vault_key_id                  = azurerm_key_vault_key.tre_encryption[0].id
       identity_id                       = azurerm_user_assigned_identity.encryption[0].id
-      infrastructure_encryption_enabled = true
     }
   }
 

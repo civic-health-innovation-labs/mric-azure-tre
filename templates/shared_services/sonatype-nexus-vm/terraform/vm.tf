@@ -103,7 +103,7 @@ resource "azurerm_linux_virtual_machine" "nexus" {
   admin_username                  = "adminuser"
   admin_password                  = random_password.nexus_vm_password.result
   tags                            = local.tre_shared_service_tags
-  encryption_at_host_enabled      = true
+  encryption_at_host_enabled      = false
   secure_boot_enabled             = true
   vtpm_enabled                    = true
 
