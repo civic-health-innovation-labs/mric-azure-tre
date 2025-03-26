@@ -1,7 +1,7 @@
 ---
 schemaVersion: 1.0.0
 name: tre-service-guacamole-windowsvm
-version: 1.2.8
+version: 1.2.9
 description: "An Azure TRE User Resource Template for Guacamole (Windows 10)"
 dockerfile: Dockerfile.tmpl
 registry: azuretre
@@ -13,8 +13,9 @@ custom:
     "4 CPU | 16GB RAM (Standard)": Standard_D4s_v5
     "8 CPU | 32GB RAM (Standard)": Standard_D8s_v5
     "16 CPU | 64GB RAM (Standard)": Standard_D16s_v5
-    "6 CPU | 56GB RAM (GPU)": "NC6"
-    "12 CPU | 112GB RAM (GPU)": "NC12"
+    "4 CPU | 28GB RAM (GPU)": "Standard_NC4as_T4_v3"
+    "8 CPU | 56GB RAM (GPU)": "Standard_NC8as_T4_v3"
+    "16 CPU | 110GB RAM (GPU)": "Standard_NC16as_T4_v3"
 
   image_options:
     "Windows 11 Data Science":
