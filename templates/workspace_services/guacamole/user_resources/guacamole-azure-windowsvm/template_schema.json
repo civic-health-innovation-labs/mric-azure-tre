@@ -28,10 +28,13 @@
         "title": "VM Size",
         "description": "Select size of VM",
         "enum": [
-          "2 CPU | 8GB RAM",
-          "4 CPU | 16GB RAM",
-          "8 CPU | 32GB RAM",
-          "16 CPU | 64GB RAM"
+          "2 CPU | 8GB RAM (Standard)",
+          "4 CPU | 16GB RAM (Standard)",
+          "8 CPU | 32GB RAM (Standard)",
+          "16 CPU | 64GB RAM (Standard)",
+          "4 CPU | 28GB RAM (GPU)",
+          "8 CPU | 56GB RAM (GPU)",
+          "16 CPU | 110GB RAM (GPU)"
         ],
         "updateable": true
       },
