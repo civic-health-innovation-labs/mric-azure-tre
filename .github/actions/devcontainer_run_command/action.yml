@@ -194,10 +194,10 @@ runs:
       run: |
         docker run --rm --mount \
           "type=bind,src=${{ github.workspace }},dst=/workspaces/tre" \
+          --mount "type=bind,src=$HOME/.azure,dst=/home/vscode/.azure,readonly" \
           -v /var/run/docker.sock:/var/run/docker.sock \
           --workdir /workspaces/tre \
           --user vscode \
-          --entrypoint /bin/bash \
           -e TF_INPUT="0" \
           -e TF_IN_AUTOMATION="1" \
           -e USE_ENV_VARS_NOT_FILES="true" \
@@ -263,5 +263,5 @@ runs:
           -e TF_VAR_app_gateway_sku=${{ inputs.APP_GATEWAY_SKU }} \
           -e E2E_TESTS_NUMBER_PROCESSES="${{ inputs.E2E_TESTS_NUMBER_PROCESSES }}" \
           '${{ inputs.CI_CACHE_ACR_NAME }}${{ env.ACR_DOMAIN_SUFFIX }}/tredev:${{ inputs.DEVCONTAINER_TAG }}' \
-          -c "az login --service-principal -u \$ARM_CLIENT_ID --tenant \$ARM_TENANT_ID --federated-token \$AZURE_ACCESS_TOKEN && az account set -s \$ARM_SUBSCRIPTION_ID && ${{ inputs.COMMAND }}"
+          ${{ inputs.COMMAND }}
 
