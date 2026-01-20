@@ -20,6 +20,11 @@ terraform {
   }
 }
 
+provider "azurerm" {
+  features {}
+  subscription_id = var.subscription_id != "" ? var.subscription_id : null
+}
+
 resource "random_password" "password" {
   length           = 16
   lower            = true
@@ -63,10 +68,6 @@ resource "azurerm_disk_encryption_set" "vmss_disk_encryption" {
     type         = "UserAssigned"
     identity_ids = [azurerm_user_assigned_identity.vmss_msi.id]
   }
-
-  depends_on = [
-    azurerm_role_assignment.vmss_kv_encryption_key_user
-  ]
 }
 
 resource "azurerm_linux_virtual_machine_scale_set" "vm_linux" {
@@ -171,57 +172,6 @@ resource "terraform_data" "vm_linux_reimage" {
   depends_on = [
     azurerm_linux_virtual_machine_scale_set.vm_linux
   ]
-}
-
-resource "azurerm_role_assignment" "mgmt_storage_account_blob_contributor" {
-  scope                = data.azurerm_storage_account.mgmt_storage.id
-  role_definition_name = "Storage Blob Data Contributor"
-  principal_id         = azurerm_user_assigned_identity.vmss_msi.principal_id
-}
-
-resource "azurerm_role_assignment" "vmss_acr_pull" {
-  scope                = var.acr_id
-  role_definition_name = "AcrPull"
-  principal_id         = azurerm_user_assigned_identity.vmss_msi.principal_id
-}
-
-resource "azurerm_role_assignment" "vmss_sb_sender" {
-  scope                = var.service_bus_namespace_id
-  role_definition_name = "Azure Service Bus Data Sender"
-  principal_id         = azurerm_user_assigned_identity.vmss_msi.principal_id
-}
-
-resource "azurerm_role_assignment" "vmss_sb_receiver" {
-  scope                = var.service_bus_namespace_id
-  role_definition_name = "Azure Service Bus Data Receiver"
-  principal_id         = azurerm_user_assigned_identity.vmss_msi.principal_id
-}
-
-resource "azurerm_role_assignment" "subscription_administrator" {
-  # Below is a workaround TF replacing this resource when using the data object.
-  scope                = var.subscription_id != "" ? "/subscriptions/${var.subscription_id}" : data.azurerm_subscription.current.id
-  role_definition_name = "User Access Administrator"
-  principal_id         = azurerm_user_assigned_identity.vmss_msi.principal_id
-}
-
-resource "azurerm_role_assignment" "subscription_contributor" {
-  # Below is a workaround TF replacing this resource when using the data object.
-  scope                = var.subscription_id != "" ? "/subscriptions/${var.subscription_id}" : data.azurerm_subscription.current.id
-  role_definition_name = "Contributor"
-  principal_id         = azurerm_user_assigned_identity.vmss_msi.principal_id
-}
-
-resource "azurerm_role_assignment" "keyvault_vmss_role" {
-  scope                = var.key_vault_id
-  role_definition_name = "Key Vault Administrator"
-  principal_id         = azurerm_user_assigned_identity.vmss_msi.principal_id // id-vmss-<TRE_ID>
-}
-
-resource "azurerm_role_assignment" "vmss_kv_encryption_key_user" {
-  count                = var.enable_cmk_encryption ? 1 : 0
-  scope                = var.key_store_id
-  role_definition_name = "Key Vault Crypto Officer"
-  principal_id         = azurerm_user_assigned_identity.vmss_msi.principal_id
 }
 
 module "terraform_azurerm_environment_configuration" {
