@@ -43,6 +43,30 @@ $DaemonConfig = @"
 "@
 $DaemonConfig | Out-File -Encoding Ascii ( New-Item -Path $env:ProgramData\docker\config\daemon.json -Force )
 
+function Ensure-Chocolatey {
+    if (Get-Command choco -ErrorAction SilentlyContinue) {
+        Write-Host "Chocolatey already installed."
+        return
+    }
+
+    Write-Host "Installing Chocolatey..."
+    Set-ExecutionPolicy Bypass -Scope Process -Force
+    $ProgressPreference = 'SilentlyContinue'
+    [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12
+    $script = (New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1')
+    Invoke-Expression $script
+    $env:PATH += ';C:\ProgramData\chocolatey\bin'
+}
+
+# Ensure R is installed (needed by researchers); install via Chocolatey if missing
+if (-not (Get-Command R.exe -ErrorAction SilentlyContinue)) {
+    Ensure-Chocolatey
+    Write-Host "R not found. Installing R via Chocolatey..."
+    choco install r.project -y --no-progress
+} else {
+    Write-Host "R is already installed."
+}
+
 # R config
 $RConfig = @"
 local({
