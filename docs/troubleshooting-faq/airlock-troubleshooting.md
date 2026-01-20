@@ -28,3 +28,23 @@ Look for errors in the function invocations in the same time frame that the airl
 [![Functions error](../assets/airlock_functions_error.png)](../assets/airlock_functions_error.png)
 
 If this error should have been handled please create an issue on the GitHub repository for the Azure TRE.
+
+## Python 3.12 `distutils` missing in Airlock Processor
+
+**Symptom**: Function app errors with `ModuleNotFoundError: No module named 'distutils'` when importing `strtobool` in `BlobCreatedTrigger` or `ScanResultTrigger` after moving to Python 3.12.
+
+**Root cause**: `distutils` was removed from the Python 3.12 standard library, so `from distutils.util import strtobool` fails on the Functions worker runtime.
+
+**Fix applied**:
+- Replaced the `distutils` import with a small local `strtobool` helper in both triggers: [airlock_processor/BlobCreatedTrigger/__init__.py](../../airlock_processor/BlobCreatedTrigger/__init__.py#L1-L34) and [airlock_processor/ScanResultTrigger/__init__.py](../../airlock_processor/ScanResultTrigger/__init__.py#L1-L32).
+- Rebuilt and pushed the container image via `make build-and-push-airlock-processor`, then restarted the function app to pull the new image.
+
+**Verification steps**:
+1. Confirm the function app setting `DOCKER_CUSTOM_IMAGE_NAME` points to the updated tag (e.g. `airlock-processor:0.8.0`).
+2. Tail logs after restart to ensure triggers start cleanly:
+	```bash
+	az functionapp log tail --name func-airlock-processor-<tre_id> --resource-group rg-<tre_id>
+	```
+3. Ensure `ENABLE_MALWARE_SCANNING` is set to a valid truthy/falsey string (`true/false`, `1/0`, `yes/no`).
+
+**If you hit it again**: cherry-pick or re-apply the above change set, rebuild/push the image, and restart the function app.
