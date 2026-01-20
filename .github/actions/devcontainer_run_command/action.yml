@@ -259,4 +259,4 @@ runs:
           -e TF_VAR_app_gateway_sku=${{ inputs.APP_GATEWAY_SKU }} \
           -e E2E_TESTS_NUMBER_PROCESSES="${{ inputs.E2E_TESTS_NUMBER_PROCESSES }}" \
           '${{ inputs.CI_CACHE_ACR_NAME }}${{ env.ACR_DOMAIN_SUFFIX }}/tredev:${{ inputs.DEVCONTAINER_TAG }}' \
-        bash -c "az login --service-principal -u '${ARM_CLIENT_ID}' -p '${AZURE_ACCESS_TOKEN}' --tenant '${ARM_TENANT_ID}'; ${{ inputs.COMMAND }}"
+        bash -c "az login --service-principal -u \$ARM_CLIENT_ID -p \$AZURE_ACCESS_TOKEN --tenant \$ARM_TENANT_ID && ${{ inputs.COMMAND }}"

@@ -58,12 +58,12 @@ if [[ "${1:-?}" == *"porter"* ]]; then
   fi
 fi
 
-# This is called if we are in a CI system and we will login
-# with a Service Principal.
-if [ -n "${TF_IN_AUTOMATION:-}" ]; then
-    az cloud set --name "$AZURE_ENVIRONMENT"
-    az login --service-principal -u "$ARM_CLIENT_ID" -p "$ARM_CLIENT_SECRET" --tenant "$ARM_TENANT_ID"
-    az account set -s "$ARM_SUBSCRIPTION_ID"
+# In CI we can authenticate with a service principal secret, but when using OIDC
+# (no ARM_CLIENT_SECRET provided) we should rely on the existing azure/login context.
+if [ -n "${TF_IN_AUTOMATION:-}" ] && [ -n "${ARM_CLIENT_SECRET:-}" ]; then
+  az cloud set --name "$AZURE_ENVIRONMENT"
+  az login --service-principal -u "$ARM_CLIENT_ID" -p "$ARM_CLIENT_SECRET" --tenant "$ARM_TENANT_ID"
+  az account set -s "$ARM_SUBSCRIPTION_ID"
 fi
 
 SUB_NAME=$(az account show --query name -o tsv)
