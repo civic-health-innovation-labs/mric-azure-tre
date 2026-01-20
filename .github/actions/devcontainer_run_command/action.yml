@@ -186,6 +186,8 @@ runs:
       run: |
         ACCESS_TOKEN=$(az account get-access-token --query accessToken -o tsv)
         echo "AZURE_ACCESS_TOKEN=$ACCESS_TOKEN" >> $GITHUB_ENV
+        ARM_OIDC_TOKEN=$(az account get-access-token --resource-type oss-rdbms --query accessToken -o tsv)
+        echo "ARM_OIDC_TOKEN=$ARM_OIDC_TOKEN" >> $GITHUB_ENV
 
     - name: Run command in DevContainer
       shell: bash
@@ -195,6 +197,7 @@ runs:
           -v /var/run/docker.sock:/var/run/docker.sock \
           --workdir /workspaces/tre \
           --user vscode \
+          --entrypoint /bin/bash \
           -e TF_INPUT="0" \
           -e TF_IN_AUTOMATION="1" \
           -e USE_ENV_VARS_NOT_FILES="true" \
@@ -207,11 +210,10 @@ runs:
           -e TF_VAR_location="${{ inputs.LOCATION }}" \
           -e RESOURCE_LOCATION="${{ inputs.LOCATION }}" \
           -e ARM_CLIENT_ID="${{ inputs.AZURE_CLIENT_ID }}" \
-          -e ARM_CLIENT_SECRET="" \
           -e ARM_TENANT_ID="${{ inputs.AZURE_TENANT_ID }}" \
           -e ARM_SUBSCRIPTION_ID="${{ inputs.AZURE_SUBSCRIPTION_ID }}" \
           -e ARM_USE_OIDC="true" \
-          -e ARM_OIDC_TOKEN="${{ env.AZURE_ACCESS_TOKEN }}" \
+          -e ARM_OIDC_TOKEN="${{ env.ARM_OIDC_TOKEN }}" \
           -e AZURE_ACCESS_TOKEN="${{ env.AZURE_ACCESS_TOKEN }}" \
           -e TF_VAR_terraform_state_container_name="${{ (inputs.TERRAFORM_STATE_CONTAINER_NAME != ''
             && inputs.TERRAFORM_STATE_CONTAINER_NAME) || 'tfstate' }}" \
@@ -261,4 +263,5 @@ runs:
           -e TF_VAR_app_gateway_sku=${{ inputs.APP_GATEWAY_SKU }} \
           -e E2E_TESTS_NUMBER_PROCESSES="${{ inputs.E2E_TESTS_NUMBER_PROCESSES }}" \
           '${{ inputs.CI_CACHE_ACR_NAME }}${{ env.ACR_DOMAIN_SUFFIX }}/tredev:${{ inputs.DEVCONTAINER_TAG }}' \
-        bash -c "az login --service-principal -u \$ARM_CLIENT_ID -p \$AZURE_ACCESS_TOKEN --tenant \$ARM_TENANT_ID && ${{ inputs.COMMAND }}"
+          -c "az login --service-principal -u \$ARM_CLIENT_ID --tenant \$ARM_TENANT_ID --federated-token \$AZURE_ACCESS_TOKEN && az account set -s \$ARM_SUBSCRIPTION_ID && ${{ inputs.COMMAND }}"
+
