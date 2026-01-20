@@ -194,7 +194,7 @@ runs:
       run: |
         docker run --rm --mount \
           "type=bind,src=${{ github.workspace }},dst=/workspaces/tre" \
-          --mount "type=bind,src=$HOME/.azure,dst=/home/vscode/.azure,readonly" \
+          --mount "type=bind,src=$HOME/.azure,dst=/home/vscode/.azure" \
           -v /var/run/docker.sock:/var/run/docker.sock \
           --workdir /workspaces/tre \
           --user vscode \
