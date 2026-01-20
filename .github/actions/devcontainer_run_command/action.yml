@@ -151,7 +151,6 @@ runs:
 
     - name: Azure Login
       uses: azure/login@v2
-      if: contains(inputs.COMMAND, 'bootstrap') != true
       with:
         client-id: ${{ inputs.AZURE_CLIENT_ID }}
         tenant-id: ${{ inputs.AZURE_TENANT_ID }}
@@ -160,7 +159,6 @@ runs:
 
     - name: ACR Login
       shell: bash
-      if: contains(inputs.COMMAND, 'bootstrap') != true
       run: |
         az acr login --name "${{ inputs.CI_CACHE_ACR_NAME }}"
 
