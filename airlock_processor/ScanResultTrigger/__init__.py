@@ -1,4 +1,3 @@
-from distutils.util import strtobool
 import logging
 
 import azure.functions as func
@@ -7,6 +6,20 @@ import uuid
 import json
 import os
 from shared_code import constants, blob_operations
+
+
+def strtobool(val):
+    """Convert a string representation of truth to boolean.
+
+    Replacement for deprecated distutils.util.strtobool.
+    """
+    val = val.lower()
+    if val in ('y', 'yes', 't', 'true', 'on', '1'):
+        return True
+    elif val in ('n', 'no', 'f', 'false', 'off', '0'):
+        return False
+    else:
+        raise ValueError(f"invalid truth value {val!r}")
 
 
 def main(msg: func.ServiceBusMessage,

@@ -1,4 +1,3 @@
-from distutils.util import strtobool
 import logging
 import datetime
 import uuid
@@ -10,6 +9,20 @@ import azure.functions as func
 
 from shared_code import constants
 from shared_code.blob_operations import get_blob_info_from_topic_and_subject, get_blob_client_from_blob_info
+
+
+def strtobool(val):
+    """Convert a string representation of truth to boolean.
+
+    Replacement for deprecated distutils.util.strtobool.
+    """
+    val = val.lower()
+    if val in ('y', 'yes', 't', 'true', 'on', '1'):
+        return True
+    elif val in ('n', 'no', 'f', 'false', 'off', '0'):
+        return False
+    else:
+        raise ValueError(f"invalid truth value {val!r}")
 
 
 def main(msg: func.ServiceBusMessage,
