@@ -181,6 +181,12 @@ runs:
       run: |
         echo "ACR_DOMAIN_SUFFIX=$(az cloud show --query suffixes.acrLoginServerEndpoint --output tsv)" >> $GITHUB_ENV
 
+    - name: Get Azure Access Token
+      shell: bash
+      run: |
+        ACCESS_TOKEN=$(az account get-access-token --query accessToken -o tsv)
+        echo "AZURE_ACCESS_TOKEN=$ACCESS_TOKEN" >> $GITHUB_ENV
+
     - name: Run command in DevContainer
       shell: bash
       run: |
@@ -204,6 +210,7 @@ runs:
           -e ARM_CLIENT_SECRET="" \
           -e ARM_TENANT_ID="${{ inputs.AZURE_TENANT_ID }}" \
           -e ARM_SUBSCRIPTION_ID="${{ inputs.AZURE_SUBSCRIPTION_ID }}" \
+          -e AZURE_ACCESS_TOKEN="${{ env.AZURE_ACCESS_TOKEN }}" \
           -e TF_VAR_terraform_state_container_name="${{ (inputs.TERRAFORM_STATE_CONTAINER_NAME != ''
             && inputs.TERRAFORM_STATE_CONTAINER_NAME) || 'tfstate' }}" \
           -e TF_VAR_mgmt_storage_account_name="${{ inputs.MGMT_STORAGE_ACCOUNT_NAME }}" \
