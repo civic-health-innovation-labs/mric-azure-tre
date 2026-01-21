@@ -18,6 +18,9 @@ jobs:
     # environment is used to access the secrets for Azure credentials
     # to sign in to a container registry to re-use a dev container image as a build cache
     environment: ${{ inputs.environment || 'Prod'}}
+    permissions:
+      contents: read
+      id-token: write
 
     steps:
       - name: Checkout (GitHub)
@@ -34,7 +37,7 @@ jobs:
             tre --help
           DEVCONTAINER_TAG: latest
           CI_CACHE_ACR_NAME: ${{ secrets.ACR_NAME}}
-          AZURE_CLIENT_ID: ${{ secrets. AZURE_CLIENT_ID }}
+          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
           AZURE_TENANT_ID:  ${{ secrets.AZURE_TENANT_ID }}
           AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           AZURE_ENVIRONMENT: ${{ vars.AZURE_ENVIRONMENT }}
@@ -50,7 +53,7 @@ jobs:
           CI_CACHE_ACR_NAME: ${{ secrets.ACR_NAME}}
           AZURE_CLIENT_ID:  ${{ secrets.AZURE_CLIENT_ID }}
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-          AZURE_SUBSCRIPTION_ID: ${{ secrets. AZURE_SUBSCRIPTION_ID }}
+          AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           AZURE_ENVIRONMENT: ${{ vars.AZURE_ENVIRONMENT }}
 
       - name: Upload Wheel as artifact
