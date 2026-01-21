@@ -254,10 +254,10 @@ jobs:
           DEVCONTAINER_TAG: ${{ inputs.DEVCONTAINER_TAG }}
           CI_CACHE_ACR_NAME: ${{ secrets.CI_CACHE_ACR_NAME}}
           AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          ARM_CLIENT_SECRET:  ${{ secrets.ARM_CLIENT_SECRET }}
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
           AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           AZURE_ENVIRONMENT: ${{ vars.AZURE_ENVIRONMENT }}
-          ARM_USE_OIDC: "true"
           TRE_ID: ${{ secrets.TRE_ID }}
           LOCATION: ${{ vars.LOCATION }}
           ACR_NAME: ${{ secrets.ACR_NAME }}
