@@ -9,7 +9,10 @@ inputs:
     description: "The container label to use when running the command."
     required: true
   AZURE_CLIENT_ID:
-    description: "Azure Client ID for OIDC authentication."
+    description: "Azure Client ID for SP authentication."
+    required: true
+  ARM_CLIENT_SECRET:
+    description: "The Service Principal Client Secret for ARM authentication."
     required: true
   AZURE_TENANT_ID:
     description: "Azure Tenant ID for OIDC authentication."
@@ -152,10 +155,8 @@ runs:
     - name: Azure Login
       uses: azure/login@v2
       with:
-        client-id: ${{ inputs.AZURE_CLIENT_ID }}
-        tenant-id: ${{ inputs.AZURE_TENANT_ID }}
-        subscription-id: ${{ inputs.AZURE_SUBSCRIPTION_ID }}
-        environment: "${{ env.AZURE_ENVIRONMENT }}"
+          creds: '{"clientId":"${{ inputs.AZURE_CLIENT_ID }}","clientSecret":"${{ inputs.ARM_CLIENT_SECRET }}","subscriptionId":"${{ inputs.AZURE_SUBSCRIPTION_ID }}","tenantId":"${{ inputs. AZURE_TENANT_ID }}"}'
+          environment: "${{ env.AZURE_ENVIRONMENT }}"
 
     - name: ACR Login
       shell: bash
