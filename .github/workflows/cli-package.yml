@@ -40,7 +40,7 @@ jobs:
           AZURE_ENVIRONMENT: ${{ vars.AZURE_ENVIRONMENT }}
 
       - name: Create the CLI package
-        uses: . /.github/actions/devcontainer_run_command
+        uses: ./.github/actions/devcontainer_run_command
         with:
           COMMAND: |
             # Create the python wheel
