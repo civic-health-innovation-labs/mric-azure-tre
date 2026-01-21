@@ -89,17 +89,12 @@ RUN export AZURE_CLI_VERSION=${AZURE_CLI_VERSION} \
 # RUN curl -L --fail -o /usr/local/bin/yq "https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_amd64" \
 #     && chmod +x /usr/local/bin/yq
 
-ARG YQ_VERSION="v4.44.8"
-RUN apt-get update && apt-get install -y wget --no-install-recommends \
-    && (wget --timeout=60 --tries=3 --waitretry=10 \
+ARG YQ_VERSION="v4.35.1"
+RUN wget --no-verbose --tries=5 --timeout=60 \
         -O /usr/local/bin/yq \
         "https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_amd64" \
-        || wget --timeout=60 --tries=3 --waitretry=10 \
-        -O /usr/local/bin/yq \
-        "https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64") \
     && chmod +x /usr/local/bin/yq \
-    && yq --version \
-    && apt-get clean -y && rm -rf /var/lib/apt/lists/*
+    && yq --version
 
 ARG PAJV_VERSION="1.2.0"
 RUN npm install -g pajv@${PAJV_VERSION}
