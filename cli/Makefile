@@ -6,11 +6,11 @@ help: ## show this help
 	| column -t -s '|'
 
 pip-install: ## install required dependencides
-	pip install --break-system-packages -r requirements.txt
+	pip install --ignore-installed -r requirements.txt
 
 install-cli: ## install CLI (note, run `source <(_TRE_COMPLETE=bash_source tre)` to set up bash completion)
 	sudo rm -rf build dist tre.egg-info
-	sudo pip install --break-system-packages .
+	sudo pip install --ignore-installed .
 
 build-package: ## build package
 	./scripts/build.sh
