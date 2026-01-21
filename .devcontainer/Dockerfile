@@ -91,9 +91,12 @@ RUN export AZURE_CLI_VERSION=${AZURE_CLI_VERSION} \
 
 ARG YQ_VERSION="v4.44.8"
 RUN apt-get update && apt-get install -y wget --no-install-recommends \
-    && wget -q --timeout=30 --tries=5 \
+    && (wget --timeout=60 --tries=3 --waitretry=10 \
         -O /usr/local/bin/yq \
         "https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_amd64" \
+        || wget --timeout=60 --tries=3 --waitretry=10 \
+        -O /usr/local/bin/yq \
+        "https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64") \
     && chmod +x /usr/local/bin/yq \
     && yq --version \
     && apt-get clean -y && rm -rf /var/lib/apt/lists/*
