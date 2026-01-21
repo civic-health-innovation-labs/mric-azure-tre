@@ -85,9 +85,16 @@ COPY .devcontainer/scripts/azure-cli.sh /tmp/
 RUN export AZURE_CLI_VERSION=${AZURE_CLI_VERSION} \
     && /tmp/azure-cli.sh
 
+# ARG YQ_VERSION="v4.44.6"
+# RUN curl -L --fail -o /usr/local/bin/yq "https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_amd64" \
+#     && chmod +x /usr/local/bin/yq
+
 ARG YQ_VERSION="v4.44.6"
-RUN curl -L --fail -o /usr/local/bin/yq "https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_amd64" \
-    && chmod +x /usr/local/bin/yq
+RUN curl -L --fail --retry 3 --retry-delay 10 --connect-timeout 30 \
+    -o /usr/local/bin/yq \
+    "https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_amd64" \
+    && chmod +x /usr/local/bin/yq \
+    && yq --version
 
 ARG PAJV_VERSION="1.2.0"
 RUN npm install -g pajv@${PAJV_VERSION}
