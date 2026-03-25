@@ -42,7 +42,7 @@ jobs:
       - name: Whitelist Runner IP on Key Vault
         shell: bash
         env:
-          KEYVAULT: ${{ secrets.KEYVAULT_NAME }}
+          KEYVAULT: ${{ secrets.KEYVAULT }}
           RESOURCE_GROUP_NAME: ${{ secrets.MGMT_RESOURCE_GROUP_NAME }}
         run: |
           RUNNER_IP=$(curl -s https://api.ipify.org)
@@ -78,7 +78,7 @@ jobs:
         if: always()
         shell: bash
         env:
-          KEYVAULT: ${{ secrets.KEYVAULT_NAME }}
+          KEYVAULT: ${{ secrets.KEYVAULT }}
           RESOURCE_GROUP_NAME: ${{ secrets.MGMT_RESOURCE_GROUP_NAME }}
         run: |
           RUNNER_IP=$(curl -s https://api.ipify.org)
