@@ -39,6 +39,21 @@ jobs:
           terraform_version: 1.2.9
           terraform_wrapper: false
 
+      - name: Whitelist Runner IP on Key Vault
+        shell: bash
+        env:
+          KEYVAULT: ${{ secrets.KEYVAULT_NAME }}
+          RESOURCE_GROUP_NAME: ${{ secrets.MGMT_RESOURCE_GROUP_NAME }}
+        run: |
+          RUNNER_IP=$(curl -s https://api.ipify.org)
+          echo "Runner IP: $RUNNER_IP"
+          az keyvault network-rule add \
+            --name "${KEYVAULT}" \
+            --resource-group "${RESOURCE_GROUP_NAME}" \
+            --ip-address "$RUNNER_IP"
+          echo "Waiting for rule to take effect"
+          sleep 30s
+
       - name: Renew Certificates
         shell: bash
         env:
@@ -58,3 +73,16 @@ jobs:
             && /opt/certbot/bin/pip install --upgrade pip \
             && /opt/certbot/bin/pip install certbot
           make letsencrypt
+          
+      - name: Remove Runner IP from Key Vault
+        if: always()
+        shell: bash
+        env:
+          KEYVAULT: ${{ secrets.KEYVAULT_NAME }}
+          RESOURCE_GROUP_NAME: ${{ secrets.MGMT_RESOURCE_GROUP_NAME }}
+        run: |
+          RUNNER_IP=$(curl -s https://api.ipify.org)
+          az keyvault network-rule remove \
+            --name "${KEYVAULT}" \
+            --resource-group "${RESOURCE_GROUP_NAME}" \
+            --ip-address "$RUNNER_IP"
