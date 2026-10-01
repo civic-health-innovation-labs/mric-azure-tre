@@ -772,7 +772,7 @@ jobs:
       - name: Deploy UI
         uses: ./.github/actions/devcontainer_run_command
         with:
-          COMMAND: "make build-and-deploy-ui"
+          COMMAND: "npm exec --yes --package=yarn@1.22.22 -- make build-and-deploy-ui"
           DEVCONTAINER_TAG: ${{ inputs.DEVCONTAINER_TAG }}
           CI_CACHE_ACR_NAME: ${{ secrets.CI_CACHE_ACR_NAME}}
           AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
