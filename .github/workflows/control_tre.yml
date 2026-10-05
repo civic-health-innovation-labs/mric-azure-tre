@@ -1,0 +1,81 @@
+name: Control TRE
+
+on:
+  workflow_dispatch:
+    inputs:
+      operation:
+        description: Start or stop the TRE
+        required: true
+        type: choice
+        options:
+          - stop
+          - start
+      environment:
+        description: TRE environment
+        required: true
+        type: environment
+        default: Prod
+
+permissions:
+  contents: read
+  id-token: write
+
+# Matches the concurrency group in your Deploy Azure TRE workflow.
+concurrency:
+  group: Deploy Azure TRE-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  control_tre:
+    name: "${{ inputs.operation }} TRE"
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Validate inputs and script syntax
+        shell: bash
+        env:
+          OPERATION: ${{ inputs.operation }}
+        run: |
+          set -euo pipefail
+
+          if [[ "${GITHUB_REF}" != "refs/heads/main" ]]; then
+            echo "Run this workflow from main."
+            exit 1
+          fi
+
+          case "${OPERATION}" in
+            start|stop) ;;
+            *)
+              echo "Invalid operation."
+              exit 1
+              ;;
+          esac
+
+          bash -n devops/scripts/control_tre.sh
+
+      - name: Control TRE services
+        uses: ./.github/actions/devcontainer_run_command
+        with:
+          COMMAND: ${{ inputs.operation == 'stop' && 'make tre-stop' || 'make tre-start' }}
+          DEVCONTAINER_TAG: latest
+          CI_CACHE_ACR_NAME: ${{ secrets.ACR_NAME }}
+          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          AZURE_ENVIRONMENT: ${{ vars.AZURE_ENVIRONMENT }}
+          ACR_NAME: ${{ secrets.ACR_NAME }}
+          API_CLIENT_ID: ${{ secrets.API_CLIENT_ID }}
+          AAD_TENANT_ID: ${{ secrets.AAD_TENANT_ID }}
+          TRE_ID: ${{ secrets.TRE_ID }}
+          LOCATION: ${{ vars.LOCATION }}
+          TERRAFORM_STATE_CONTAINER_NAME: ${{ vars.TERRAFORM_STATE_CONTAINER_NAME }}
+          MGMT_RESOURCE_GROUP_NAME: ${{ secrets.MGMT_RESOURCE_GROUP_NAME }}
+          MGMT_STORAGE_ACCOUNT_NAME: ${{ secrets.MGMT_STORAGE_ACCOUNT_NAME }}
+          SWAGGER_UI_CLIENT_ID: ${{ secrets.SWAGGER_UI_CLIENT_ID }}
